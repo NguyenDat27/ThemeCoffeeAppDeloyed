@@ -2,23 +2,37 @@ import { Box, Header, Icon, Page, Text } from "zmp-ui";
 import subscriptionDecor from "../static/subscription-decor.svg";
 import ListRenderer from "../components/list-renderer";
 import { useToBeImplemented } from "../hooks/hooks";
+import styled from "styled-components";
 import React from "react";
+
+const SubscriptionBox = styled(Box)`
+  background-image: url(${subscriptionDecor});
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+`;
+
+const ProfilePage = () => {
+  return (
+    <Page>
+      <Header showBackIcon={false} title="&nbsp;" />
+      <Subscription />
+      <Personal />
+      <Other />
+    </Page>
+  );
+};
 
 const Subscription = () => {
   const onClick = useToBeImplemented();
+
   return (
     <Box className="m-4" onClick={onClick}>
-      <Box
+      <SubscriptionBox
         className="bg-green text-white rounded-xl p-4 space-y-2"
-        style={{
-          backgroundImage: `url(${subscriptionDecor})`,
-          backgroundPosition: "right 8px center",
-          backgroundRepeat: "no-repeat",
-        }}
       >
         <Text.Title className="font-bold">Đăng ký thành viên</Text.Title>
         <Text size="xxSmall">Tích điểm đổi thưởng, mở rộng tiện ích</Text>
-      </Box>
+      </SubscriptionBox>
     </Box>
   );
 };
@@ -98,17 +112,6 @@ const Other = () => {
         renderRight={(item) => item.right}
       />
     </Box>
-  );
-};
-
-const ProfilePage = () => {
-  return (
-    <Page>
-      <Header showBackIcon={false} title="&nbsp;" />
-      <Subscription />
-      <Personal />
-      <Other />
-    </Page>
   );
 };
 

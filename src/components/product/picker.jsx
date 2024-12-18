@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import { React, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { FinalPrice } from "../display/final-price";
 import { Sheet } from "../../components/fullscreen-sheet";
@@ -10,7 +9,7 @@ import { isIdentical } from "../../utils/product";
 import SingleOptionPicker from './single-option-picker';
 import { useCartItems } from "../../store/cartStore";
 import { produce } from "immer";
-import React from "react";
+
 
 function getDefaultOptions(product) {
   if (product && product.variants) {
@@ -29,7 +28,6 @@ const ProductPicker = ({ children, product, selected }) => {
   const [visible, setVisible] = useState(false);
   const [options, setOptions] = useState(selected ? selected.options : getDefaultOptions(product));
   const [quantity, setQuantity] = useState(1);
-  // eslint-disable-next-line no-unused-vars
   const [cart, setCart] = useCartItems.cartItems();
 
   useEffect(() => {
@@ -61,11 +59,11 @@ const ProductPicker = ({ children, product, selected }) => {
               );
               const index = draft.indexOf(editing);
               if (index !== -1) {
-                draft.splice(index, 1, {
-                  ...editing,
+                const updatedItem = Object.assign({}, editing, {
                   options,
                   quantity: existed ? existed.quantity + quantity : quantity,
                 });
+                draft.splice(index, 1, updatedItem);
               }
               if (existed) {
                 const existedIndex = draft.indexOf(existed);
@@ -81,17 +79,13 @@ const ProductPicker = ({ children, product, selected }) => {
             if (existed) {
               const existedIndex = draft.indexOf(existed);
               if (existedIndex !== -1) {
-                draft.splice(existedIndex, 1, {
-                  ...existed,
+                const updatedItem = Object.assign({}, existed, {
                   quantity: existed.quantity + quantity,
                 });
+                draft.splice(existedIndex, 1, updatedItem);
               }
             } else {
-              draft.push({
-                product,
-                options,
-                quantity,
-              });
+              draft.push(Object.assign({}, { product, options, quantity }));
             }
           }
         })
@@ -132,10 +126,11 @@ const ProductPicker = ({ children, product, selected }) => {
                         variant={variant}
                         value={options[variant.id]}
                         onChange={(selectedOption) =>
-                          setOptions((prevOptions) => ({
-                            ...prevOptions,
-                            [variant.id]: selectedOption,
-                          }))
+                          setOptions((prevOptions) =>
+                            Object.assign({}, prevOptions, {
+                              [variant.id]: selectedOption,
+                            })
+                          )
                         }
                       />
                     ) : (
@@ -145,10 +140,11 @@ const ProductPicker = ({ children, product, selected }) => {
                         variant={variant}
                         value={options[variant.id]}
                         onChange={(selectedOption) =>
-                          setOptions((prevOptions) => ({
-                            ...prevOptions,
-                            [variant.id]: selectedOption,
-                          }))
+                          setOptions((prevOptions) =>
+                            Object.assign({}, prevOptions, {
+                              [variant.id]: selectedOption,
+                            })
+                          )
                         }
                       />
                     )
@@ -186,34 +182,6 @@ const ProductPicker = ({ children, product, selected }) => {
       )}
     </>
   );
-};
-
-// Prop validation
-ProductPicker.propTypes = {
-  product: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    variants: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string,
-        type: PropTypes.string,
-        label: PropTypes.string,
-        default: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-        options: PropTypes.arrayOf(
-          PropTypes.shape({
-            id: PropTypes.string,
-            label: PropTypes.string,
-          })
-        ),
-      })
-    ).isRequired,
-  }),
-  selected: PropTypes.shape({
-    options: PropTypes.object.isRequired,
-    quantity: PropTypes.number.isRequired,
-  }),
-  children: PropTypes.func.isRequired,
 };
 
 export default ProductPicker;

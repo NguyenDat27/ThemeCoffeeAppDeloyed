@@ -4,6 +4,11 @@ import { Box, Checkbox, Text } from "zmp-ui";
 import React from "react";
 
 const MultipleOptionPicker = ({ product, variant, value, onChange }) => {
+
+  const handleChange = (selectedOptions) => {
+    onChange(selectedOptions); // Call the passed-in onChange handler
+  };
+
   return (
     <Box my={8} className="space-y-2">
       <Text.Title size="small">{variant.label}</Text.Title>
@@ -26,9 +31,7 @@ const MultipleOptionPicker = ({ product, variant, value, onChange }) => {
         }))}
         value={value}
         defaultValue={value}
-        onChange={(selectedOptions) => {
-          onChange(selectedOptions);
-        }}
+        onChange={handleChange}
       />
     </Box>
   );

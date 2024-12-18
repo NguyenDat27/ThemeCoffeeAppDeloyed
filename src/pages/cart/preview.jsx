@@ -1,14 +1,13 @@
+import React from "react";
 import { Box, Button, Text } from "zmp-ui";
 import { DisplayPrice } from "../../components/display/price";
 import pay from "../../utils/product";
 import { calcFinalPrice } from "../../utils/product";
 import { useCartItems } from "../../store/cartStore";
 import { produce } from "immer";
-import React from "react";
 
 const CartPreview = () => {
   const [cartItems] = useCartItems.cartItems();
-  console.log(cartItems)
 
   const quantity = produce(cartItems, draft => {
     return draft.reduce((total, item) => total + item.quantity, 0);

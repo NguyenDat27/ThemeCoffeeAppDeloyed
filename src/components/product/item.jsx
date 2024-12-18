@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { FinalPrice } from "../display/final-price";
 import { Box, Text } from "zmp-ui";
 import ProductPicker from "./picker";
@@ -24,13 +23,6 @@ const ProductItem = ({ product }) => {
       )}
     </ProductPicker>
   );
-};
-
-ProductItem.propTypes = {
-  product: PropTypes.shape({
-    image: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
 };
 
 export default ProductItem;

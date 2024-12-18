@@ -10,6 +10,7 @@ import { mergeData } from "../../hooks/hooks";
 import { useProducts } from "../../store/productStore";
 import React from "react";
 import { useVariants } from "../../store/variantStore";
+import { styled } from 'styled-components';
 
 const RecommendContent = () => {
 
@@ -76,8 +77,8 @@ const RecommendFallback = () => {
   return (
     <Section title="Gợi ý cho bạn" padding="title-only">
       <Swiper slidesPerView={1.25} spaceBetween={16} className="px-4">
-        {recommendProducts.map((_, i) => (
-          <SwiperSlide key={i}>
+        {recommendProducts.map((product, i) => (
+          <SwiperSlide key={product + i}>
             <ProductSlideSkeleton />
           </SwiperSlide>
         ))}

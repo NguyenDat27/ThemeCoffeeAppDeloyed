@@ -13,6 +13,7 @@ const TimePicker = () => {
   const [date, setDate] = useNotes.deliveryDate();
   const [time, setTime] = useNotes.deliveryTime();
 
+  console.log("date", date)
   console.log("time",time)
 
   const availableDates = useMemo(() => {

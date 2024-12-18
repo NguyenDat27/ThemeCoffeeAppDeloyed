@@ -32,8 +32,8 @@ const ProductListFallback = () => {
   return (
     <Section title="Danh sách sản phẩm">
       <Box className="grid grid-cols-2 gap-4">
-        {products.map((_, i) => (
-          <ProductItemSkeleton key={i} />
+        {products.map((product, i) => (
+          <ProductItemSkeleton key={product + i} />
         ))}
       </Box>
     </Section>

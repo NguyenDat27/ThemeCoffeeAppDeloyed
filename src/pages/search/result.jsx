@@ -64,8 +64,8 @@ const SearchResultFallback = () => {
         Đang tìm kiếm...
       </Text.Title>
       <Box className="p-4 pt-0 space-y-4 flex-1 overflow-y-auto">
-        {result.map((_, i) => (
-          <ProductSearchResultSkeleton key={i} />
+        {result.map((result, i) => (
+          <ProductSearchResultSkeleton key={result + i} />
         ))}
       </Box>
     </Box>
