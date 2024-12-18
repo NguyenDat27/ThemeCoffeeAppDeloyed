@@ -10,7 +10,6 @@ import { mergeData } from "../../hooks/hooks";
 import { useProducts } from "../../store/productStore";
 import React from "react";
 import { useVariants } from "../../store/variantStore";
-import { styled } from 'styled-components';
 
 const RecommendContent = () => {
 

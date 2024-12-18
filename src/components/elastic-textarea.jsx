@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { tripUnit } from "../utils/dom";
+import styled from "styled-components";
 import React from "react";
 
 const adjustHeight = (el, maxRows) => {

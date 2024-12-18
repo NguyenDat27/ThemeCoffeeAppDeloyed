@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { FinalPrice } from "../display/final-price";
 import { Sheet } from "../../components/fullscreen-sheet";
