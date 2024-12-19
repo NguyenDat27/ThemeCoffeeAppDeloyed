@@ -1,7 +1,7 @@
 import { Box, Header, Icon, Page, Text } from "zmp-ui";
 import subscriptionDecor from "../static/subscription-decor.svg";
 import ListRenderer from "../components/list-renderer";
-import { useToBeImplemented } from "../hooks/hooks";
+import { useCheckAuth, useToBeImplemented } from "../hooks/hooks";
 import styled from "styled-components";
 import React from "react";
 
@@ -23,10 +23,17 @@ const ProfilePage = () => {
 };
 
 const Subscription = () => {
-  const onClick = useToBeImplemented();
 
+  const checkAuth = useCheckAuth(); 
+
+  const handleAuthClick = async () => { 
+    const login = await checkAuth(); 
+    if (login) { 
+      await login(); 
+    } 
+  };
   return (
-    <Box className="m-4" onClick={onClick}>
+    <Box className="m-4" onClick={handleAuthClick}>
       <SubscriptionBox
         className="bg-green text-white rounded-xl p-4 space-y-2"
       >

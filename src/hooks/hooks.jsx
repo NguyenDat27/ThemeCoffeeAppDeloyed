@@ -5,6 +5,8 @@ import { useNavigate, useSnackbar } from "zmp-ui";
 import React from "react";
 import { calcFinalPrice } from "../utils/product";
 import { useCartItems } from "../store/cartStore";
+import { authorizeUser, getAuth, getPhoneFunction, getUser } from '../api';
+import { useUserInfo } from '../store/infoStore'
 
 // Hook for matching status bar text color visibility
 export function useMatchStatusTextColor(visible) {
@@ -151,3 +153,47 @@ export function calTotalItems () {
 export function sortByDistance(locations) {
   return locations.sort((a, b) => a.distance - b.distance);
 }
+
+function convertPhoneNumber(phoneNumber) {
+  if (phoneNumber.startsWith("84")) {
+    return "0" + phoneNumber.slice(2);
+  }
+  return phoneNumber;
+}
+
+export const useCheckAuth = () => {
+  const [user, setUser] = useUserInfo.user();
+  const [phone, setPhone] = useUserInfo.phone();
+
+  const checkAuth = async () => {
+    const data = await getAuth();
+
+    if (!data["scope.userLocation"] || !data["scope.userPhonenumber"]) {
+      await authorizeUser(["scope.userLocation", "scope.userPhonenumber"]);
+    }
+
+    const login = async () => {
+
+      if (data["scope.userLocation"] || data["scope.userPhonenumber"]) {
+        const info = await getUser();
+        setUser(info);
+
+
+        try {
+          const phoneNumber = await getPhoneFunction();
+          setPhone(convertPhoneNumber(phoneNumber));
+        } catch (error) {
+          console.error("Không lấy được số điện thoại:", error);
+        }
+      };
+    }
+    return login;
+  };
+
+  return checkAuth;
+};
+
+
+
+
+
