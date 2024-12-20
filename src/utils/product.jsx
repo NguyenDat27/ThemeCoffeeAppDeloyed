@@ -100,7 +100,7 @@ export const createOrder = async (amount) => {
   };
 
   // Khóa bí mật để tạo HMAC
-  const privateKey = "cc1ae951e08d9f1c7ccce3f80ed68ae8";
+  const privateKey = import.meta.env.VITE_PRIVATE_KEY_HMAC;
 
   // Tạo mã hóa HMAC
   const mac = createHmac(params, privateKey);

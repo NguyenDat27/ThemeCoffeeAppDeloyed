@@ -42,13 +42,13 @@ export const getPhoneFunction = async () => {
           let { token } = dataPhone;
 
           // Transfer Data
-          const endpoint = "https://graph.zalo.me/v2.0/me/info";
+          const endpoint = import.meta.env.VITE_END_POINT_AUTH;
           const options = {
             method: "GET",
             headers: {
               access_token: accessToken,
               code: token,
-              secret_key: "mJVVs13799RS0GG04GoJ",
+              secret_key: import.meta.env.VITE_SECRET_KEY_APP,
             },
           };
 
@@ -91,13 +91,13 @@ export const getLocationFunction = async () => {
           let { token } = dataLocation;
 
           // Transfer Data
-          const endpoint = "https://graph.zalo.me/v2.0/me/info";
+          const endpoint = import.meta.env.VITE_END_POINT_AUTH;
           const options = {
             method: "GET",
             headers: {
               access_token: accessToken,
               code: token,
-              secret_key: "mJVVs13799RS0GG04GoJ",
+              secret_key: import.meta.env.VITE_SECRET_KEY_APP,
             },
           };
 

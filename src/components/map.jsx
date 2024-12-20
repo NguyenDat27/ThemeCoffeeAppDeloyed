@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import GoogleMapReact from "google-map-react";
+import { useUserInfo } from "../store/infoStore";
 
 // Thành phần hiển thị marker
 const Marker = ({ text }) => (
@@ -19,28 +20,29 @@ const Marker = ({ text }) => (
 );
 
 export default function SimpleMap() {
-  const [location, setLocation] = useState({
-    lat: 10.831098,
-    lng: 106.733128,
-  });
+  const [latitude, setLatitude] = useUserInfo.latitude();
+  const [longitude, setLongitude] = useUserInfo.longitude();
 
   const defaultProps = {
     center: {
-      lat: location.lat,
-      lng: location.lng,
+      lat: latitude,
+      lng: longitude,
     },
-    zoom: 15,
+    zoom: 18,
   };
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: "AIzaSyC-VRgtd5SUVoKvU5-rnfJzopJY2wgKDj0" }} // Thay bằng API Key của bạn
+        bootstrapURLKeys={{ key: import.meta.env.VITE_GOOGLE_MAP_KEY_API }} // Thay bằng API Key của bạn
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
-        onClick={(e) => setLocation({ lat: e.lat, lng: e.lng })} // Cho phép chọn vị trí bằng cách nhấn
+        onClick={(e) => { //Cho phép chọn vị trí
+          setLat(e.lat); 
+          setLong(e.lng);
+        }}
       >
-        <Marker lat={location.lat} lng={location.lng} text="📍" />
+        <Marker lat={latitude} lng={longitude} text="📍" />
       </GoogleMapReact>
     </div>
   );

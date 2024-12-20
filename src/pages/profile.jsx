@@ -182,7 +182,7 @@ const TestMap = () => {
           // title="Map Viewer"
           // className="modal-map"
         >
-          <Box style={{ height: "100%", width: "100%" }}>
+          <Box>
             <SimpleMap /> {/* Render bản đồ trong modal */}
           </Box>
         </Modal>
