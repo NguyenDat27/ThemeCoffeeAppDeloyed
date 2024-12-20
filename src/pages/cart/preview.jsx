@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Button, Text } from "zmp-ui";
 import { DisplayPrice } from "../../components/display/price";
-import pay from "../../utils/product";
+import { createOrder } from "../../utils/product";
 import { calcFinalPrice } from "../../utils/product";
 import { useCartItems } from "../../store/cartStore";
 import { produce } from "immer";
@@ -39,7 +39,7 @@ const CartPreview = () => {
         type="highlight"
         disabled={!quantity}
         fullWidth
-        onClick={() => pay(totalPrice)}
+        onClick={() => createOrder(totalPrice)}
       >
         Đặt hàng
       </Button>

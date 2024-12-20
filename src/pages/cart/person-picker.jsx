@@ -1,20 +1,25 @@
 import ListItem from "../../components/list-item";
+import { useCheckUser } from "../../hooks/hooks";
 import { useUserInfo } from "../../store/infoStore";
 import React from "react";
 
 const PersonPicker = () => {
-  const [user, setUser] = useUserInfo.user();
-  const [phone, setPhone] = useUserInfo.phone();
+  const [user] = useUserInfo.user();
+  const [phone] = useUserInfo.phone();
 
-  const noUserPhone = () => {
-    setUser("User Name");
-    setPhone("0337076898")
-  }
+  const checkAuth = useCheckUser(); 
+
+  const handleAuthClick = async () => { 
+    const login = await checkAuth(); 
+    if (login) { 
+      await login(); 
+    } 
+  };
 
   if (user === "" && phone === "") {
     return (
       <ListItem
-        onClick={() => noUserPhone()}
+        onClick={handleAuthClick}
         title="Chọn người nhận"
         subtitle="Yêu cầu truy cập số điện thoại"
       />

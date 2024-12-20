@@ -1,4 +1,4 @@
-import { authorize, getPhoneNumber, getUserInfo, getAccessToken, getSetting } from "zmp-sdk/apis";
+import { authorize, getPhoneNumber, getUserInfo, getAccessToken, getSetting, getLocation } from "zmp-sdk/apis";
 
 export const authorizeUser = async (scopes = []) => {
     try {
@@ -74,6 +74,55 @@ export const getPhoneFunction = async () => {
     });
   } catch (error) {
     console.error("Lỗi trong getPhoneFunction:", error);
+    throw error;
+  }
+};
+
+
+export const getLocationFunction = async () => {
+  try {
+    // Get Access Token
+    const accessToken = await getAccessToken({});
+    console.log("Token access:", accessToken);
+
+    return new Promise((resolve, reject) => {
+      getLocation({
+        success: async (dataLocation) => {
+          let { token } = dataLocation;
+
+          // Transfer Data
+          const endpoint = "https://graph.zalo.me/v2.0/me/info";
+          const options = {
+            method: "GET",
+            headers: {
+              access_token: accessToken,
+              code: token,
+              secret_key: "mJVVs13799RS0GG04GoJ",
+            },
+          };
+
+          try {
+            const response = await fetch(endpoint, options);
+            const res = await response.json();
+
+            if (response.ok && res.data) {
+              console.log("Response Code:", response.status);
+              console.log("Response Body:", res.data);
+              resolve(res.data);
+            } else {
+              reject(new Error("Không lấy được vị trí."));
+            }
+          } catch (error) {
+            reject(error);
+          }
+        },
+        fail: (error) => {
+          reject(error);
+        },
+      });
+    });
+  } catch (error) {
+    console.error("Lỗi trong getLocationFunction:", error);
     throw error;
   }
 };

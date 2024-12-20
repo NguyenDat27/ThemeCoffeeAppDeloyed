@@ -1,6 +1,8 @@
-import { createOrder } from "zmp-sdk";
 import { getConfig } from "./config";
 import React from "react";
+import { Payment } from 'zmp-sdk/apis';
+import HMAC from 'crypto-js/hmac-sha256';
+
 
 export function calcFinalPrice(product, options) {
   let finalPrice = product.price;
@@ -71,19 +73,51 @@ export function isIdentical(option1, option2) {
   return true;
 }
 
-const pay = (amount, description) =>
-  createOrder({
-    desc:
-      description ??
-      `Thanh toán cho ${getConfig((config) => config.app.title)}`,
+// Hàm tạo mã hóa HMAC
+const createHmac = (params, privateKey) => {
+  const dataMac = Object.keys(params)
+    .sort() // sắp xếp key của Object data theo thứ tự từ điển tăng dần
+    .map(
+      (key) =>
+        `${key}=${
+          typeof params[key] === "object"
+            ? JSON.stringify(params[key])
+            : params[key]
+        }`,
+    ) // trả về mảng dữ liệu dạng [{key=value}, ...]
+    .join("&"); // chuyển về dạng string kèm theo "&", ví dụ: amount={amount}&desc={desc}&extradata={extradata}&item={item}&method={method}`
+  
+  return HMAC(dataMac, privateKey).toString();
+};
+
+// Hàm tạo đơn hàng với tham số amount
+export const createOrder = async (amount) => {
+  // Dữ liệu muốn truyền vào API createOrder
+  const params = {
+    desc: `Thanh toán ${getConfig((config) => config.app.title)}`,
     item: [],
     amount: amount,
-    success: (data) => {
-      console.log("Payment success: ", data);
-    },
-    fail: (err) => {
-      console.log("Payment error: ", err);
-    },
-  });
+  };
 
-export default pay;
+  // Khóa bí mật để tạo HMAC
+  const privateKey = "cc1ae951e08d9f1c7ccce3f80ed68ae8";
+
+  // Tạo mã hóa HMAC
+  const mac = createHmac(params, privateKey);
+
+  try {
+    await Payment.createOrder({
+      ...params,
+      mac: mac,
+      success: (data) => { 
+        console.log("Order successful. Data received:", data); 
+      }, 
+      fail: (err) => { 
+        console.log("Order failed. Error:", err); 
+      }
+    });
+  } catch (err){
+    // Tạo đơn hàng lỗi
+    console.log(err);
+  }
+};

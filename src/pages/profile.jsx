@@ -1,7 +1,7 @@
 import { Box, Header, Icon, Page, Text } from "zmp-ui";
 import subscriptionDecor from "../static/subscription-decor.svg";
 import ListRenderer from "../components/list-renderer";
-import { useCheckAuth, useToBeImplemented } from "../hooks/hooks";
+import { useCheckUser, useToBeImplemented } from "../hooks/hooks";
 import styled from "styled-components";
 import React from "react";
 
@@ -24,7 +24,7 @@ const ProfilePage = () => {
 
 const Subscription = () => {
 
-  const checkAuth = useCheckAuth(); 
+  const checkAuth = useCheckUser(); 
 
   const handleAuthClick = async () => { 
     const login = await checkAuth(); 
@@ -32,6 +32,7 @@ const Subscription = () => {
       await login(); 
     } 
   };
+
   return (
     <Box className="m-4" onClick={handleAuthClick}>
       <SubscriptionBox
@@ -45,13 +46,21 @@ const Subscription = () => {
 };
 
 const Personal = () => {
-  const onClick = useToBeImplemented();
+
+  const checkAuth = useCheckUser(); 
+
+  const handleAuthClick = async () => { 
+    const login = await checkAuth(); 
+    if (login) { 
+      await login(); 
+    } 
+  };
 
   return (
     <Box className="m-4">
       <ListRenderer
         title="Cá nhân"
-        onClick={onClick}
+        onClick={handleAuthClick}
         items={[
           {
             left: <Icon icon="zi-user" />,
@@ -84,13 +93,21 @@ const Personal = () => {
 };
 
 const Other = () => {
-  const onClick = useToBeImplemented();
+
+  const checkAuth = useCheckUser(); 
+
+  const handleAuthClick = async () => { 
+    const login = await checkAuth(); 
+    if (login) { 
+      await login(); 
+    } 
+  };
 
   return (
     <Box className="m-4">
       <ListRenderer
         title="Khác"
-        onClick={onClick}
+        onClick={handleAuthClick}
         items={[
           {
             left: <Icon icon="zi-star" />,

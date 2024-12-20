@@ -5,20 +5,28 @@ import ListItem from "../../components/list-item";
 import { displayDistance } from "../../utils/location";
 import { useStores } from "../../store/listStore";
 import React from "react";
+import { useCheckLocation, useNearStore } from "../../hooks/hooks";
+import { useUserInfo } from "../../store/infoStore";
 
 const StorePicker = () => {
   const [visible, setVisible] = useState(false);
-  const [stores] = useStores.stores();
+  const checkLocation = useCheckLocation();
   const [selectedStore, setSelectedStore] = useStores.selectStore();
+  const [listNearStore] = useStores.nearStores();
 
-  const noStore = () => {
-    setSelectedStore(stores[0]);
-  }
+
+  const handleLocaltionClick = async () => {
+    const login = await checkLocation();
+    if (login) {
+      await login();
+    }
+
+  };
 
   if (selectedStore.length === 0) {
     return (
       <ListItem
-        onClick={() => noStore()}
+        onClick={handleLocaltionClick}
         title="Chọn cửa hàng"
         subtitle="Yêu cầu truy cập vị trí"
       />
@@ -40,7 +48,7 @@ const StorePicker = () => {
             visible={visible}
             onClose={() => setVisible(false)}
             actions={[
-              ...stores.map((store) => ({
+              ...listNearStore.map((store) => ({
                 text: store.distance
                   ? `${store.name} - ${displayDistance(store.distance)}`
                   : store.name,
