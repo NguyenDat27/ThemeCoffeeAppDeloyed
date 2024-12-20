@@ -1,9 +1,10 @@
-import { Box, Header, Icon, Page, Text } from "zmp-ui";
+import { Box, Header, Icon, Page, Text, Modal } from "zmp-ui";
 import subscriptionDecor from "../static/subscription-decor.svg";
 import ListRenderer from "../components/list-renderer";
-import { useCheckUser, useToBeImplemented } from "../hooks/hooks";
+import { useCheckUser } from "../hooks/hooks";
 import styled from "styled-components";
-import React from "react";
+import React, { useState } from "react";
+import SimpleMap from "../components/map";
 
 const SubscriptionBox = styled(Box)`
   background-image: url(${subscriptionDecor});
@@ -18,6 +19,7 @@ const ProfilePage = () => {
       <Subscription />
       <Personal />
       <Other />
+      <TestMap />
     </Page>
   );
 };
@@ -135,6 +137,56 @@ const Other = () => {
         renderLeft={(item) => item.left}
         renderRight={(item) => item.right}
       />
+    </Box>
+  );
+};
+
+const TestMap = () => {
+  const [showModal, setShowModal] = useState(false); // Trạng thái hiển thị modal
+
+  const handleOpenModal = () => {
+    setShowModal(true); // Mở modal
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false); // Đóng modal
+  };
+
+  return (
+    <Box className="m-4">
+      <ListRenderer
+        title="Map"
+        onClick={handleOpenModal} // Gọi hàm mở modal
+        items={[
+          {
+            left: <Icon icon="zi-star" />,
+            right: (
+              <Box flex>
+                <Text.Header className="flex-1 items-center font-normal">
+                  Test Map
+                </Text.Header>
+                <Icon icon="zi-chevron-right" />
+              </Box>
+            ),
+          },
+        ]}
+        renderLeft={(item) => item.left}
+        renderRight={(item) => item.right}
+      />
+
+      {/* Modal hiển thị bản đồ */}
+      {showModal && (
+        <Modal
+          visible={showModal}
+          onClose={handleCloseModal} // Đóng modal khi nhấn nút close
+          // title="Map Viewer"
+          // className="modal-map"
+        >
+          <Box style={{ height: "100%", width: "100%" }}>
+            <SimpleMap /> {/* Render bản đồ trong modal */}
+          </Box>
+        </Modal>
+      )}
     </Box>
   );
 };
