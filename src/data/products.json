@@ -88,7 +88,7 @@
     "id": 10,
     "name": "Combo Hi Tea Aroma",
     "image": "https://stc-zmp.zadn.vn/templates/zaui-coffee/dummy/product-rect-2.webp",
-    "price": 57000,
+    "price": 8000,
     "sale": {
       "type": "fixed",
       "amount": 7000

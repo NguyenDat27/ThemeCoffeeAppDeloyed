@@ -8,7 +8,7 @@ import { authorizeUser, getAuth, getLocationFunction, getPhoneFunction, getUser 
 import { useUserInfo } from '../store/infoStore'
 import { useStores } from "../store/listStore";
 import { calculateDistance } from "../utils/location";
-import { Payment, events, EventName } from "zmp-sdk/apis";
+import { events, EventName } from "zmp-sdk";
 
 // Hook for matching status bar text color visibility
 export function useMatchStatusTextColor(visible) {
@@ -41,91 +41,41 @@ export function useVirtualKeyboardVisible() {
   return visible;
 }
 
-// Hook for handling payment events
 export const useHandlePayment = () => {
   const navigate = useNavigate();
   useEffect(() => {
     events.on(EventName.OpenApp, (data) => {
-      const path = data?.path;
-      if (path.includes(RedirectPath)) {
-        Payment.checkTransaction({
-          data: path,
-          success: (rs) => {
-            const { orderId, resultCode, msg, transTime, createdAt } = rs;
-            navigate("/result");
-            console.log("data open:", orderId, resultCode, msg, transTime, createdAt)
-          },
-          fail: (err) => {
-            navigate("/result");
-            console.log("open", err);
-          },
-        });s
+      if (data?.path) {
+        navigate(data?.path, {
+          state: data,
+        });
       }
     });
 
     events.on(EventName.OnDataCallback, (resp) => {
-      const { eventType, data } = resp;
-      if (eventType === "PAY_BY_BANK") {
-        if (data.appTransID) {
-          // gọi api checkTransaction để lấy thông tin giao dịch
-          Payment.checkTransaction({
-            data,
-            success: (rs) => {
-              // Kết quả giao dịch khi gọi api thành công
-              const { id, resultCode, msg, transTime, createdAt } = rs;
-              navigate("/result");
-              console.log("data ondataCallback bank:", orderId, resultCode, msg, transTime, createdAt)
-            },
-            fail: (err) => {
-              // Kết quả giao dịch khi gọi api thất bại
-              navigate("/result");
-              console.log("ondataCallback bank", err);
-            },
-          });
-        }
-      }
-      if (eventType === "PAY_BY_CUSTOM_METHOD") {
-        // method: mã phương thức thanh toán
-        // orderId: mã của đơn hàng thanh toán
-        const { method, orderId } = data;
-        navigate("/result");
-        console.log("data ondataCallback custom:", method, orderId)
-      }
-    });
-
-    events.on(EventName.PaymentClose, (data) => {
-      const resultCode = data?.resultCode;
-
-      // kiểm tra resultCode trả về từ sự kiện PaymentClose
-      // 0: Đang xử lý
-      // 1: Thành công
-      // -1: Thất bại
-    
-      //Nếu trạng thái đang thực hiện, kiểm tra giao dịch bằng API checkTransaction nếu muốn
-      if (resultCode === 0) {
-        Payment.checkTransaction({
-          data: { zmpOrderId: data?.zmpOrderId },
-          success: (rs) => {
-            // Kết quả giao dịch khi gọi api thành công
-            const { orderId, resultCode, msg, transTime, createdAt } = rs;
-            navigate("/result");
-            console.log("data close 0:", orderId, resultCode, msg, transTime, createdAt)
-          },
-          fail: (err) => {
-            // Kết quả giao dịch khi gọi api thất bại
-            navigate("/result");
-            console.log("close 0:", err);
-          },
+      const { appTransID, eventType } = resp;
+      if (appTransID || eventType === "PAY_BY_CUSTOM_METHOD") {
+        navigate("/result", {
+          state: resp,
         });
-      } else {
-        // Xử lý kết quả thanh toán thành công hoặc thất bại 
-        const { orderId, resultCode, msg, transTime, createdAt } = data;
-        navigate("/result");
-        console.log("data close -1,1:", orderId, resultCode, msg, transTime, createdAt)
+      }
+      if (appTransID || eventType === "PAY_BY_BANK") {
+        navigate("/result", {
+          state: resp,
+        });
       }
     });
-  }, [navigate]);
+
+    events.on(EventName.PaymentClose, (data = {}) => {
+      console.log("data paymentclose", data);
+      const { zmpOrderId } = data;
+      navigate("/result", {
+        state: { data: { zmpOrderId } },
+      });
+    });
+  }, []);
 };
+
 
 // Function for showing a snackbar message for "To Be Implemented"
 export function useToBeImplemented() {

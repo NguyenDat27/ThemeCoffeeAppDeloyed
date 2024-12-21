@@ -14,8 +14,9 @@ import React from "react";
 
 const CheckoutResultPage = () => {
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const [paymentResult, setPaymentResult] = useState(null);
+  const location = useLocation();
+  const state = location.state || {};
+  const [paymentResult, setPaymentResult] = useState();
 
   useEffect(() => {
     let timeout;
