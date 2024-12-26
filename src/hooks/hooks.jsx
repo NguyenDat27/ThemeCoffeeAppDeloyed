@@ -45,37 +45,40 @@ export const useHandlePayment = () => {
   const navigate = useNavigate();
   useEffect(() => {
     events.on(EventName.OpenApp, (data) => {
+      console.log("open app active:", resp)
       if (data?.path) {
         navigate(data?.path, {
           state: data,
         });
       }
     });
-
+    
     events.on(EventName.OnDataCallback, (resp) => {
+      console.log("callback data active:", resp)
       const { appTransID, eventType } = resp;
       if (appTransID || eventType === "PAY_BY_CUSTOM_METHOD") {
         navigate("/result", {
           state: resp,
         });
       }
-      if (appTransID || eventType === "PAY_BY_BANK") {
-        navigate("/result", {
-          state: resp,
-        });
+      if (eventType === "PAY_BY_BANK") {
+        if (appTransID) {
+          navigate("/result", {
+            state: resp,
+          });
+        }
       }
     });
 
     events.on(EventName.PaymentClose, (data = {}) => {
-      console.log("data paymentclose", data);
+      console.log("close app active:", data)
       const { zmpOrderId } = data;
       navigate("/result", {
         state: { data: { zmpOrderId } },
       });
     });
-  }, []);
-};
-
+  },[]);
+}
 
 // Function for showing a snackbar message for "To Be Implemented"
 export function useToBeImplemented() {

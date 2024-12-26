@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Header, Page, Text, useNavigate } from "zmp-ui";
-import {
-  Payment,
-} from "zmp-sdk";
+import { Payment } from "zmp-sdk";
 import { useLocation } from "react-router";
 import {
   IconPaymentFail,
@@ -11,15 +9,17 @@ import {
 } from "../components/payment-icon";
 import { useCartItems } from "../store/cartStore";
 import React from "react";
+import axios from "axios";
 
 const CheckoutResultPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
   const [paymentResult, setPaymentResult] = useState();
+  const [resultCode, setResultCode] = useState();
+  const [cart, setCart] = useCartItems.cartItems();
 
   useEffect(() => {
-    let timeout;
 
     const check = () => {
       let data = state;
@@ -36,14 +36,12 @@ const CheckoutResultPage = () => {
         data,
         success: (rs) => {
           // Kết quả giao dịch khi gọi api thành công
+          console.log("Transaction Success:", rs);
           setPaymentResult(rs);
-          if (rs.resultCode === 0) {
-            // Thanh toán đang được xử lý
-            timeout = setTimeout(check, 3000);
-          }
         },
         fail: (err) => {
           // Kết quả giao dịch khi gọi api thất bại
+          console.log("Transaction Fail:", rs);
           setPaymentResult(err);
         },
       });
@@ -51,18 +49,15 @@ const CheckoutResultPage = () => {
 
     check();
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [state]);
+    console.log("Final status", paymentResult);
 
-  const [cart, setCart] = useCartItems.cartItems();
+  }, []);
+
   useEffect(() => {
-    if (paymentResult?.resultCode >= 0) {
-      console.log(cart);
+    if (paymentResult?.resultCode > 0) {
       setCart([]);
     }
-  }, [paymentResult, cart, setCart]);
+  }, [paymentResult])
 
   const renderResult = ({ title, message, icon }) => (
     <Box className="p-6 space-y-3 flex-1 flex flex-col justify-center items-center text-center">
@@ -81,18 +76,26 @@ const CheckoutResultPage = () => {
       <Header title="Kết quả thanh toán" />
       {(function () {
         if (paymentResult) {
-          if (paymentResult.resultCode === 1) {
+          if (paymentResult.method === "COD_SANDBOX") {
             return renderResult({
-              title: "Thanh toán thành công",
-              message: `Đơn hàng của bạn đã được thanh toán thành công. Đơn hàng của bạn sẽ được xử lý trong thời gian sớm nhất.`,
+              title: "Đơn hàng đã xác nhận",
+              message: `Đơn hàng của bạn sẽ được xử lý trong thời gian sớm nhất.`,
               icon: <IconPaymentSuccess />,
             });
           } else {
-            return renderResult({
-              title: "Thanh toán thất bại",
-              message: `Có lỗi trong quá trình xử lý, vui lòng kiểm tra lại hoặc liên hệ Shop để được hỗ trợ`,
-              icon: <IconPaymentFail />,
-            });
+            if (paymentResult.resultCode === 1) {
+              return renderResult({
+                title: "Thanh toán thành công",
+                message: `Đơn hàng đã được thanh toán thành công. Đơn hàng của bạn sẽ được xử lý trong thời gian sớm nhất.`,
+                icon: <IconPaymentSuccess />,
+              });
+            } else {
+              return renderResult({
+                title: "Thanh toán thất bại",
+                message: `Có lỗi trong quá trình xử lý. Vui lòng kiểm tra lại hoặc liên hệ Shop để được hỗ trợ.`,
+                icon: <IconPaymentFail />,
+              });
+            }
           }
         }
         return renderResult({
@@ -112,3 +115,4 @@ const CheckoutResultPage = () => {
 };
 
 export default CheckoutResultPage;
+
